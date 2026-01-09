@@ -1,0 +1,95 @@
+/* Color Palette Popup */
+
+.color-palette-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+
+.color-palette-popover {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.color-palette-colors {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.color-palette-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.1s;
+}
+
+.color-palette-swatch:hover {
+  transform: scale(1.1);
+}
+
+.color-palette-swatch.selected {
+  border-color: var(--accent-bg);
+}
+
+/* Swatch colors */
+.color-palette-swatch.highlight-yellow { background-color: #ffeb3b; }
+.color-palette-swatch.highlight-green { background-color: #4caf50; }
+.color-palette-swatch.highlight-blue { background-color: #2196f3; }
+.color-palette-swatch.highlight-pink { background-color: #e91e63; }
+.color-palette-swatch.highlight-orange { background-color: #ff9800; }
+
+.color-palette-toggle {
+  width: 100%;
+  padding: 6px 12px;
+  margin-bottom: 4px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.color-palette-toggle:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.color-palette-toggle input[type="checkbox"] {
+  margin: 0;
+}
+
+.color-palette-remove {
+  width: 100%;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.color-palette-remove:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}

@@ -1,10 +1,12 @@
 pub mod app;
 pub mod bookmark_button;
+pub mod color_palette;
 pub mod content;
 pub mod header;
 pub mod icon;
 pub mod main_app;
 pub mod mermaid_window;
+pub mod pinned_chip;
 pub mod right_sidebar;
 pub mod search_bar;
 pub mod sidebar;

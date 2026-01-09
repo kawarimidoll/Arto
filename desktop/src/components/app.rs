@@ -20,6 +20,7 @@ use crate::assets::MAIN_SCRIPT;
 use crate::drag;
 use crate::events::{
     ActiveDragUpdate, ACTIVE_DRAG_UPDATE, OPEN_DIRECTORY_IN_WINDOW, OPEN_FILE_IN_WINDOW,
+    PINNED_SEARCH_CHANGED,
 };
 use crate::menu;
 use crate::state::{AppState, PersistedState, Tab, LAST_FOCUSED_STATE};
@@ -220,6 +221,28 @@ pub fn App(
             let title = crate::utils::window_title::generate_window_title(&tab.content);
             window().set_title(&title);
         }
+    });
+
+    // Re-apply highlights when tab changes or pinned searches change
+    use_effect(move || {
+        let _active_tab = *state.active_tab.read();
+        let pinned = state.pinned_searches.read().clone();
+
+        spawn(async move {
+            // Wait a bit for content to render
+            tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+
+            // Sync pinned searches and re-apply highlights
+            let pinned_json = serde_json::to_string(&pinned).unwrap_or_else(|_| "[]".to_string());
+            let js = format!(
+                r#"
+                window.Arto.search.setPinned({});
+                window.Arto.search.reapply();
+                "#,
+                pinned_json
+            );
+            let _ = document::eval(&js).await;
+        });
     });
 
     // Listen for tab transfer events (from drag-and-drop and context menu "Move to Window")
@@ -458,6 +481,28 @@ fn setup_cross_window_open_listeners(mut state: AppState) {
                     state.toggle_sidebar();
                 }
             }
+        }
+    });
+
+    // Listen for pinned search changes (from any window)
+    use_future(move || async move {
+        let mut rx = PINNED_SEARCH_CHANGED.subscribe();
+
+        while let Ok(pinned) = rx.recv().await {
+            tracing::debug!(count = pinned.len(), "Received pinned search update");
+            state.pinned_searches.set(pinned.clone());
+
+            // Sync to JavaScript and trigger re-apply
+            let pinned_json = serde_json::to_string(&pinned).unwrap_or_else(|_| "[]".to_string());
+            let js = format!(
+                r#"
+                window.Arto.search.setPinned({});
+                window.Arto.search.reapply();
+                "#,
+                pinned_json
+            );
+            let _ = document::eval(&js).await;
+            tracing::debug!("Called setPinned and reapply in JavaScript");
         }
     });
 }

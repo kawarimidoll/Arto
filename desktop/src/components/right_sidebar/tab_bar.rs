@@ -14,6 +14,13 @@ pub fn TabBar(active_tab: RightSidebarTab, on_change: EventHandler<RightSidebarT
                 onclick: move |_| on_change.call(RightSidebarTab::Contents),
                 span { "Contents" }
             }
+
+            // Search tab
+            button {
+                class: if active_tab == RightSidebarTab::Search { "right-sidebar-tab active" } else { "right-sidebar-tab" },
+                onclick: move |_| on_change.call(RightSidebarTab::Search),
+                span { "Search" }
+            }
         }
     }
 }

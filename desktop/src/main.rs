@@ -7,6 +7,8 @@ mod events;
 mod history;
 mod markdown;
 mod menu;
+mod pinned_search;
+mod search_match;
 mod state;
 mod theme;
 mod utils;

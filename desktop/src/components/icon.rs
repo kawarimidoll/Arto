@@ -34,6 +34,7 @@ pub enum IconName {
     List,
     Moon,
     Photo,
+    Pin,
     Refresh,
     Search,
     SelectAll,
@@ -43,6 +44,7 @@ pub enum IconName {
     StarFilled,
     Sun,
     SunMoon,
+    Trash,
 }
 
 impl fmt::Display for IconName {
@@ -77,6 +79,7 @@ impl fmt::Display for IconName {
             IconName::List => "list",
             IconName::Moon => "moon",
             IconName::Photo => "photo",
+            IconName::Pin => "pin",
             IconName::Refresh => "refresh",
             IconName::Search => "search",
             IconName::SelectAll => "select-all",
@@ -86,6 +89,7 @@ impl fmt::Display for IconName {
             IconName::StarFilled => "star-filled",
             IconName::Sun => "sun",
             IconName::SunMoon => "sun-moon",
+            IconName::Trash => "trash",
         };
         write!(f, "{}", name)
     }

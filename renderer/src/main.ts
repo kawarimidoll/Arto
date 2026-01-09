@@ -19,6 +19,11 @@ declare global {
         find: typeof findInPage.find;
         navigate: typeof findInPage.navigate;
         clear: typeof findInPage.clear;
+        setPinned: typeof findInPage.setPinned;
+        getQuery: typeof findInPage.getQuery;
+        reapply: typeof findInPage.reapply;
+        getAllMatches: typeof findInPage.getAllMatches;
+        scrollToMatch: typeof findInPage.scrollToMatch;
       };
     };
   }
@@ -58,6 +63,11 @@ export function init(): void {
       find: findInPage.find,
       navigate: findInPage.navigate,
       clear: findInPage.clear,
+      setPinned: findInPage.setPinned,
+      getQuery: findInPage.getQuery,
+      reapply: findInPage.reapply,
+      getAllMatches: findInPage.getAllMatches,
+      scrollToMatch: findInPage.scrollToMatch,
     },
   };
 

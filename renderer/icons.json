@@ -26,6 +26,7 @@
   "list",
   "moon",
   "photo",
+  "pin",
   "plus",
   "refresh",
   "search",
@@ -36,5 +37,6 @@
   "star-filled",
   "sun",
   "sun-moon",
+  "trash",
   "x"
 ]

@@ -2,9 +2,11 @@ use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
 mod contents_tab;
+mod search_tab;
 mod tab_bar;
 
 use contents_tab::ContentsTab;
+use search_tab::SearchTab;
 use tab_bar::TabBar;
 
 use crate::markdown::HeadingInfo;
@@ -15,6 +17,7 @@ use crate::state::AppState;
 pub enum RightSidebarTab {
     #[default]
     Contents,
+    Search,
 }
 
 #[derive(Props, Clone, PartialEq)]
@@ -61,7 +64,14 @@ pub fn RightSidebar(props: RightSidebarProps) -> Element {
             div {
                 class: "right-sidebar-content",
 
-                ContentsTab { headings }
+                match active_tab {
+                    RightSidebarTab::Contents => rsx! {
+                        ContentsTab { headings }
+                    },
+                    RightSidebarTab::Search => rsx! {
+                        SearchTab {}
+                    },
+                }
             }
         }
     }

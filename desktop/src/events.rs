@@ -4,7 +4,9 @@
 //! - Tab transfers (drag-and-drop, context menu "Move to Window")
 //! - Drag state updates (visual feedback across windows)
 //! - Cross-window file/directory opening (context menu "Open in Window")
+//! - Pinned search synchronization (global search keywords across windows)
 
+use crate::pinned_search::PinnedSearch;
 use crate::state::Tab;
 use dioxus::desktop::tao::window::WindowId;
 use std::path::PathBuf;
@@ -62,3 +64,17 @@ pub static OPEN_FILE_IN_WINDOW: std::sync::LazyLock<broadcast::Sender<(WindowId,
 /// this event targets a specific window by its WindowId.
 pub static OPEN_DIRECTORY_IN_WINDOW: std::sync::LazyLock<broadcast::Sender<(WindowId, PathBuf)>> =
     std::sync::LazyLock::new(|| broadcast::channel(10).0);
+
+// ============================================================================
+// Pinned Search Synchronization (Global Search Keywords)
+// ============================================================================
+
+/// Notify all windows that pinned searches have changed.
+///
+/// When any window adds, removes, or modifies a pinned search, it broadcasts
+/// the updated list to all other windows. Each window updates its state and
+/// re-applies highlights to reflect the changes.
+///
+/// The list is also persisted to disk by the window that made the change.
+pub static PINNED_SEARCH_CHANGED: std::sync::LazyLock<broadcast::Sender<Vec<PinnedSearch>>> =
+    std::sync::LazyLock::new(|| broadcast::channel(16).0);

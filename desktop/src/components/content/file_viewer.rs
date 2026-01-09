@@ -277,12 +277,13 @@ fn use_context_menu_handler(file: PathBuf, base_dir: PathBuf) {
 struct SearchResultData {
     count: usize,
     current: usize,
+    matches: Vec<crate::search_match::MatchInfo>,
 }
 
 /// Hook to setup search result handler
 fn use_search_handler(mut state: AppState) {
     use_effect(move || {
-        // Setup JS search handler to receive match counts
+        // Setup JS search handler to receive match counts and match details
         let mut eval_provider = document::eval(indoc::indoc! {r#"
             window.Arto.search.setup((data) => {
                 dioxus.send(data);
@@ -292,6 +293,7 @@ fn use_search_handler(mut state: AppState) {
         spawn(async move {
             while let Ok(data) = eval_provider.recv::<SearchResultData>().await {
                 state.update_search_results(data.count, data.current);
+                state.update_search_matches(data.matches);
             }
         });
     });
