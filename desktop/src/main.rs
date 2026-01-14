@@ -14,10 +14,21 @@ mod utils;
 mod watcher;
 mod window;
 
+use clap::Parser;
 use dioxus::desktop::tao::event::{Event, WindowEvent};
+use std::path::PathBuf;
 use tokio::sync::mpsc::channel;
 use tracing_subscriber::filter::EnvFilter;
 use tracing_subscriber::prelude::*;
+
+/// Arto - A markdown viewer
+#[derive(Parser, Debug)]
+#[command(version, about)]
+struct Cli {
+    /// Files or directories to open
+    #[arg()]
+    paths: Vec<PathBuf>,
+}
 
 const DEFAULT_LOGLEVEL: &str = if cfg!(debug_assertions) {
     "debug"
@@ -26,6 +37,9 @@ const DEFAULT_LOGLEVEL: &str = if cfg!(debug_assertions) {
 };
 
 fn main() {
+    // Parse CLI arguments first (before any other initialization)
+    let cli = Cli::parse();
+
     // Load environment variables from .env file
     if let Ok(dotenv) = dotenvy::dotenv() {
         println!("Loaded .env file from: {}", dotenv.display());
@@ -38,6 +52,22 @@ fn main() {
         .lock()
         .expect("Failed to lock OPEN_EVENT_RECEIVER")
         .replace(rx);
+
+    // Send CLI paths as OpenEvents (before Dioxus launches)
+    for path in cli.paths {
+        // Canonicalize to resolve symlinks and get absolute paths
+        let path = path.canonicalize().unwrap_or(path);
+        let event = if path.is_dir() {
+            components::main_app::OpenEvent::Directory(path)
+        } else if path.is_file() {
+            components::main_app::OpenEvent::File(path)
+        } else {
+            tracing::warn!(?path, "Skipping invalid path");
+            continue;
+        };
+        tracing::debug!(?event, "Sending CLI path as open event");
+        tx.try_send(event).expect("Failed to send CLI path event");
+    }
 
     let menu = menu::build_menu();
 
