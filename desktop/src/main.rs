@@ -5,6 +5,7 @@ mod config;
 mod drag;
 mod events;
 mod history;
+mod ipc;
 mod markdown;
 mod menu;
 mod pinned_search;
@@ -40,6 +41,12 @@ fn main() {
     // Parse CLI arguments first (before any other initialization)
     let cli = Cli::parse();
 
+    // Try to send paths to existing instance via IPC
+    // If successful, exit immediately without initializing anything else
+    if let ipc::SendResult::Sent = ipc::try_send_to_existing_instance(&cli.paths) {
+        std::process::exit(0);
+    }
+
     // Load environment variables from .env file
     if let Ok(dotenv) = dotenvy::dotenv() {
         println!("Loaded .env file from: {}", dotenv.display());
@@ -52,6 +59,9 @@ fn main() {
         .lock()
         .expect("Failed to lock OPEN_EVENT_RECEIVER")
         .replace(rx);
+
+    // Start IPC server to accept connections from future instances
+    ipc::start_ipc_server(tx.clone());
 
     // Send CLI paths as OpenEvents (before Dioxus launches)
     for path in cli.paths {
