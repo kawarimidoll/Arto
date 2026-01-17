@@ -76,9 +76,11 @@ fn is_address_in_use(err: &std::io::Error) -> bool {
     }
     #[cfg(windows)]
     {
-        // Windows error code for "pipe busy" or similar
-        // ERROR_PIPE_BUSY = 231, ERROR_ACCESS_DENIED = 5
-        matches!(err.raw_os_error(), Some(231) | Some(5))
+        // Windows error code for "pipe busy"
+        // ERROR_PIPE_BUSY = 231
+        // Note: ERROR_ACCESS_DENIED (5) is NOT included as it may indicate
+        // legitimate permission issues unrelated to the pipe being in use
+        err.raw_os_error() == Some(231)
     }
 }
 
