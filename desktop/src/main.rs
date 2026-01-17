@@ -76,7 +76,9 @@ fn main() {
             continue;
         };
         tracing::debug!(?event, "Sending CLI path as open event");
-        tx.try_send(event).expect("Failed to send CLI path event");
+        if let Err(e) = tx.try_send(event) {
+            tracing::warn!(?e, "Failed to send CLI path event");
+        }
     }
 
     let menu = menu::build_menu();
@@ -127,6 +129,9 @@ fn main() {
     dioxus::LaunchBuilder::desktop()
         .with_cfg(config)
         .launch(components::main_app::MainApp);
+
+    // Clean up IPC socket on normal exit
+    ipc::cleanup_socket();
 }
 
 fn init_tracing() {
